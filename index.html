@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listas y Tablas CSS</title>
+    <style>
+        /* === ESTILOS GLOBALES (DARK MODE POR DEFECTO) === */
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .slideshow-container { position: relative; width: 90%; max-width: 960px; }
+        
+        .slide {
+            display: none;
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            height: 600px; 
+            padding: 40px 60px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            flex-direction: column; justify-content: center; position: relative;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .fade { animation-name: fade; animation-duration: 0.5s; }
+        @keyframes fade { from {opacity: .4} to {opacity: 1} }
+
+        .prev, .next {
+            cursor: pointer; position: absolute; top: 50%; transform: translateY(-50%);
+            width: 50px; height: 50px; background-color: #333; color: #f1f1f1;
+            border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex; justify-content: center; align-items: center;
+            font-weight: bold; font-size: 24px; transition: all 0.3s ease;
+            user-select: none; z-index: 10;
+        }
+        .prev:hover, .next:hover { background-color: #555; }
+        .prev { left: -70px; }
+        .next { right: -70px; }
+
+        /* === COLOR DE ACENTO: AZUL CLARO (#4fc3f7) === */
+        .slide h1 { 
+            font-size: 3.5em; 
+            text-align: center; 
+            border-bottom: 4px solid #4fc3f7; 
+            padding-bottom: 20px; 
+            color: #4fc3f7; 
+        }
+        .slide h2 { 
+            font-size: 2.6em; 
+            margin: 0 0 30px; 
+            text-align: center; 
+            color: #4fc3f7; 
+        }
+        
+        .single-content p { font-size: 1.3em; color: #cccccc; text-align: center; margin-bottom: 20px; line-height: 1.6; }
+        
+        /* Sintaxis de Código */
+        pre { width: 90%; max-width: 750px; margin: 0 auto; background-color: #263238; color: #eceff1; padding: 20px; border-radius: 8px; font-size: 1.1em; white-space: pre-wrap; border: 1px solid #37474f; text-align: left; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); }
+        
+        code { font-family: 'Consolas', 'Monaco', monospace; color: #80cbc4; }
+        .comment { color: #78909c; font-style: italic; }
+        .prop { color: #c792ea; } /* Lila */
+        .val { color: #c3e88d; }  /* Verde claro */
+        .sel { color: #ffcb6b; }  /* Amarillo */
+        .unit { color: #f78c6c; } /* Naranja */
+
+        .footer { position: absolute; bottom: 20px; right: 40px; font-size: 1em; color: #888; }
+        .subtitle { color: #b0bec5; font-size: 1.8em; font-weight: 300; margin: 0 0 30px; text-align: center; letter-spacing: 1px; }
+        
+        /* === SWITCH TEMA === */
+        .theme-switch-wrapper { position: fixed; top: 15px; right: 15px; z-index: 100; }
+        #theme-switch {
+            cursor: pointer; padding: 8px 12px; border-radius: 20px;
+            border: 1px solid #555; background-color: #333; color: #f1f1f1;
+            font-size: 0.9em; transition: all 0.3s ease;
+        }
+        #theme-switch:hover { background-color: #555; }
+
+        /* === LIGHT MODE === */
+        body.light-mode { background-color: #f5f7fa; color: #333; }
+        body.light-mode .slide { background-color: #fff; border-color: #d1d9e6; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        
+        /* Azul vibrante para modo claro (#0288d1) */
+        body.light-mode .slide h1 { color: #0288d1; border-color: #0288d1; }
+        body.light-mode .slide h2 { color: #0288d1; }
+        
+        body.light-mode .subtitle { color: #546e7a; }
+        body.light-mode .single-content p { color: #455a64; }
+        body.light-mode pre { background-color: #eceff1; border-color: #cfd8dc; color: #263238; }
+        body.light-mode code { color: #00695c; }
+        body.light-mode .comment { color: #90a4ae; }
+        body.light-mode .prop { color: #7b1fa2; }
+        body.light-mode .val { color: #2e7d32; }
+        body.light-mode .sel { color: #d84315; } 
+        body.light-mode .unit { color: #e65100; }
+
+        body.light-mode .prev, body.light-mode .next { background-color: #e0e0e0; color: #333; }
+        body.light-mode .prev:hover, body.light-mode .next:hover { background-color: #bdbdbd; }
+        body.light-mode #theme-switch { background-color: #fff; color: #333; border-color: #ccc; }
+        body.light-mode #theme-switch:hover { background-color: #eee; }
+
+        @media screen and (max-width: 768px) {
+            body { padding: 15px; }
+            .slideshow-container { width: 100%; padding-bottom: 75px; }
+            .slide { height: auto; min-height: 75vh; padding: 20px 25px; }
+            .prev, .next { top: auto; bottom: 15px; width: 45px; height: 45px; }
+            .prev { left: 50%; transform: translateX(-110%); }
+            .next { left: 50%; transform: translateX(10%); right: auto; }
+            .slide h1 { font-size: 2.2em; }
+            .slide h2 { font-size: 1.8em; }
+            .single-content p { font-size: 1.1em; }
+            pre { font-size: 0.9em; }
+            .footer { font-size: 0.8em; right: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="theme-switch-wrapper">
+        <button id="theme-switch">Light Mode</button>
+    </div>
+
+    <div class="slideshow-container">
+        
+        <!-- =============================================================== -->
+        <!-- INICIO DE DIAPOSITIVAS -->
+        <!-- =============================================================== -->
+
+        <div class="slide fade">
+            <h1>Cheat Sheet de CSS</h1>
+            <div class="subtitle">Listas y Tablas</div>
+            <div class="footer">1 / 15</div>
+        </div>
+
+        <div class="slide fade">
+            <h2>Estilos de Lista: Tipo</h2>
+            <div class="single-content">
+                <p>Cambia el marcador de la lista (bullet point o número) con <code>list-style-type</code>.</p>
+                <pre><code><span class="sel">ul</span> {
+  <span class="comment">/* Círculos, cuadrados, discos... */</span>
+  <span class="prop">list-style-type</span>: <span class="val">square</span>;
+}
+
+<span class="sel">ol</span> {
+  <span class="comment">/* Números, letras, romanos... */</span>
+  <span class="prop">list-style-type</span>: <span class="val">upper-roman</span>; <span class="comment">/* I, II, III */</span>
+  <span class="prop">list-style-type</span>: <span class="val">lower-alpha</span>; <span class="comment">/* a, b, c */</span>
+}</code></pre>
+            </div>
+            <div class="footer">2 / 15</div>
+        </div>
+        
+        <div class="slide fade">
+            <h2>Posición del Marcador</h2>
+            <div class="single-content">
+                <p><code>list-style-position</code> decide si la viñeta está dentro o fuera de la caja de contenido.</p>
+                <pre><code><span class="sel">li</span> {
+  <span class="comment">/* (Por defecto) La viñeta está fuera del flujo de texto */</span>
+  <span class="prop">list-style-position</span>: <span class="val">outside</span>;
+
+  <span class="comment">/* La viñeta está dentro, el texto la envuelve */</span>
+  <span class="prop">list-style-position</span>: <span class="val">inside</span>;
+}</code></pre>
+            </div>
+            <div class="footer">3 / 15</div>
+        </div>
+
+        <div class="slide fade">
+            <h2>Imagen como Viñeta</h2>
+            <div class="single-content">
+                <p>Puedes usar una imagen personalizada en lugar de los puntos estándar.</p>
+                <pre><code><span class="sel">ul</span> {
+  <span class="prop">list-style-image</span>: <span class="val">url('icono-check.svg')</span>;
+}
+
+<span class="comment">/* Nota: Es difícil controlar el tamaño de esta imagen.
+   A menudo es mejor usar ::before para iconos custom. */</span></code></pre>
+            </div>
+            <div class="footer">4 / 15</div>
+        </div>
+
+        <div class="slide fade">
+            <h2>Eliminar Estilos (Reset)</h2>
+            <div class="single-content">
+                <p>Esencial para crear barras de navegación y menús limpios.</p>
+                <pre><code><span class="sel">nav ul</span> {
+  <span class="comment">/* Quita los puntos/números */</span>
+  <span class="prop">list-style</span>: <span class="val">none</span>;
+  
+  <span class="comment">/* Quita el sangrado (indentación) por defecto */</span>
+  <span class="prop">padding-left</span>: <span class="val">0</span>;
+  <span class="prop">margin</span>: <span class="val">0</span>;
+}</code></pre>
+            </div>
+            <div class="footer">5 / 15</div>
+        </div>
+
+        <div class="slide fade">
+            <h2>Shorthand: List Style</h2>
+            <div class="single-content">
+                <p>Resume las tres propiedades en una sola línea.</p>
+                <pre><code><span class="sel">ul</span> {
+  <span class="comment">/* type | position | image */</span>
+  <span class="prop">list-style</span>: <span class="val">square inside url('img.png')</span>;
+  
+  <span class="comment">/* Uso común para resetear */</span>
+  <span class="prop">list-style</span>: <span class="val">none</span>;
+}</code></pre>
+            </div>
+            <div class="footer">6 / 15</div>
+        </div>
+
+        <div class="slide fade">
+            <h2>Tablas en CSS</h2>
+            <div class="single-content">
+                <p>Las tablas HTML por defecto son feas y tienen doble borde. CSS es obligatorio para que se vean profesionales.</p>
+                <pre><code><span class="sel">table</span> {
+  <span class="prop">width</span>: <span class="val">100<span class="unit">%</span></span>;
+  <span class="prop">text-align</span>: <span class="val">left</span>;
+}
+
+<span class="sel">th, td</span> {
+  <span class="prop">padding</span>: <span class="val">10<span class="unit">px</span></span>;
+  <span class="prop">border</span>: <span class="val">1<span class="unit">px</span> solid #ddd</span>;
+}</code></pre>
+            </div>
+            <div class="footer">7 / 15</div>
+        </div>
+
+        <div class="slide fade">
+            <h2>Border Collapse</h2>
+            <div class="single-content">
+                <p>La propiedad más importante para tablas. Decide si las celdas comparten bordes o están separadas.</p>
+                <pre><code><span class="sel">table</span> {
+  <span class="comment">/* Las celdas tienen espacios entre ellas (Old school) */</span>
+  <span class="prop">border-collapse</span>: <span class="val">separate</span>;
+
+  <span class="comment">/* Los bordes se fusionan en una sola línea (Moderno) */</span>
+  <span class="prop">border-collapse</span>: <span class="val">collapse</span>;
+}</code></pre>
+            </div>
+            <div class="footer">8 / 15</div>
+        </div>
+
+        <div class="slide fade">
+            <h2>Border Spacing</h2>
+            <div class="single-content">
+                <p>Si usas <code>border-collapse: separate</code>, puedes controlar el espacio entre celdas.</p>
+                <pre><code><span class="sel">table</span> {
+  <span class="prop">border-collapse</span>: <span class="val">separate</span>;
+  
+  <span class="comment">/* Espacio Horizontal | Espacio Vertical */</span>
+  <span class="prop">border-spacing</span>: <span class="val">10<span class="unit">px</span> 20<span class="unit">px</span></span>;
+}</code></pre>
+            </div>
+            <div class="footer">9 / 15</div>
+        </div>
+
+        <div class="slide fade">
+            <h2>Table Layout</h2>
+            <div class="single-content">
+                <p>Controla cómo se calcula el ancho de las columnas. Vital para performance en tablas grandes.</p>
+                <pre><code><span class="sel">table</span> {
+  <span class="comment">/* El ancho depende del contenido (Lento, puede saltar) */</span>
+  <span class="prop">table-layout</span>: <span class="val">auto</span>;
+
+  <span class="comment">/* El ancho es fijo/respetado. Más rápido y predecible. */</span>
+  <span class="prop">table-layout</span>: <span class="val">fixed</span>;
+  <span class="prop">width</span>: <span class="val">100<span class="unit">%</span></span>;
+}</code></pre>
+            </div>
+            <div class="footer">10 / 15</div>
+        </div>
+
+        <div class="slide fade">
+            <h2>Caption Side</h2>
+            <div class="single-content">
+                <p>Posiciona el título de la tabla (elemento <code>&lt;caption&gt;</code>).</p>
+                <pre><code><span class="sel">caption</span> {
+  <span class="prop">caption-side</span>: <span class="val">bottom</span>; <span class="comment">/* Pone el título abajo */</span>
+  <span class="prop">font-style</span>: <span class="val">italic</span>;
+  <span class="prop">padding</span>: <span class="val">10<span class="unit">px</span></span>;
+}</code></pre>
+            </div>
+            <div class="footer">11 / 15</div>
+        </div>
+
+        <div class="slide fade">
+            <h2>Celdas Vacías (Empty Cells)</h2>
+            <div class="single-content">
+                <p>Controla si se muestran los bordes y fondo de celdas sin contenido.</p>
+                <pre><code><span class="sel">table</span> {
+  <span class="prop">border-collapse</span>: <span class="val">separate</span>;
+  
+  <span class="comment">/* show (defecto) | hide */</span>
+  <span class="prop">empty-cells</span>: <span class="val">hide</span>;
+}</code></pre>
+            </div>
+            <div class="footer">12 / 15</div>
+        </div>
+
+        <div class="slide fade">
+            <h2>Diseño "Cebra" (Striped)</h2>
+            <div class="single-content">
+                <p>Mejora la legibilidad coloreando filas alternas usando pseudo-clases.</p>
+                <pre><code><span class="comment">/* Aplica a las filas pares */</span>
+<span class="sel">tr:nth-child(even)</span> {
+  <span class="prop">background-color</span>: <span class="val">#f2f2f2</span>;
+}
+
+<span class="comment">/* O usa (odd) para impares */</span></code></pre>
+            </div>
+            <div class="footer">13 / 15</div>
+        </div>
+
+        <div class="slide fade">
+            <h2>Efecto Hover en Filas</h2>
+            <div class="single-content">
+                <p>Ayuda al usuario a seguir la fila que está leyendo.</p>
+                <pre><code><span class="sel">tr:hover</span> {
+  <span class="prop">background-color</span>: <span class="val">#ddd</span>;
+  <span class="prop">cursor</span>: <span class="val">pointer</span>;
+}</code></pre>
+            </div>
+            <div class="footer">14 / 15</div>
+        </div>
+
+        <div class="slide fade">
+            <h2>Resumen</h2>
+            <div class="single-content">
+                <p>Claves para listas y tablas modernas.</p>
+                <pre><code>// Listas:
+- Usa 'list-style: none' para menús.
+- Controla la sangría con padding en el &lt;ul&gt;.
+
+// Tablas:
+- Siempre usa 'border-collapse: collapse'.
+- Usa 'nth-child' para diseño de cebra.
+- Envuelve la tabla en un div con 'overflow-x: auto'
+  para que sea responsiva en móviles.</code></pre>
+            </div>
+            <div class="footer">15 / 15</div>
+        </div>
+
+        <!-- =============================================================== -->
+        <!-- FIN DE DIAPOSITIVAS -->
+        <!-- =============================================================== -->
+
+        <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+        <a class="next" onclick="plusSlides(1)">&#10095;</a>
+    </div>
+
+    <script>
+        let slideIndex = 1;
+        showSlides(slideIndex);
+
+        function plusSlides(n) {
+            showSlides(slideIndex += n);
+        }
+
+        function showSlides(n) {
+            let i;
+            let slides = document.getElementsByClassName("slide");
+            if (n > slides.length) { slideIndex = 1 } 
+            if (n < 1) { slideIndex = slides.length }
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+            }
+            slides[slideIndex - 1].style.display = "flex";
+        }
+
+        const themeSwitch = document.getElementById('theme-switch');
+        const body = document.body;
+
+        function applyTheme(theme) {
+            if (theme === 'light') {
+                body.classList.add('light-mode');
+                themeSwitch.textContent = 'Dark Mode';
+            } else {
+                body.classList.remove('light-mode');
+                themeSwitch.textContent = 'Light Mode';
+            }
+        }
+
+        themeSwitch.addEventListener('click', () => {
+            let currentTheme = body.classList.contains('light-mode') ? 'light' : 'dark';
+            let newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            applyTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'dark'; 
+            applyTheme(savedTheme);
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') { plusSlides(-1); } 
+            else if (event.key === 'ArrowRight') { plusSlides(1); }
+        });
+    </script>
+
+</body>
+</html>
